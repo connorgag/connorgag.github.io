@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connor's Europe Backpacking Trip</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 1rem 0;
+            text-align: center;
+        }
+        main {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #4CAF50;
+        }
+        #map {
+            width: 100%;
+            height: 500px;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+    </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-polylinedecorator/1.8.0/leaflet.polylineDecorator.min.js"></script>
+    <script>
+        function initMap() {
+            const locations = [
+                {lat:44.9778, lng:-93.2650, name: "Minneapolis, MN"},
+                {lat: 42.6977, lng: 23.3219, name: "Sofia, Bulgaria"},
+                {lat: 40.6401, lng: 22.9444, name: "Thessaloniki, Greece"},
+                {lat: 37.9838, lng: 23.7275, name: "Athens, Greece"},
+                {lat: 41.0082, lng: 28.9784, name: "Istanbul, Turkey"},
+                {lat: 41.9028, lng: 12.4964, name: "Rome, Italy"},
+                {lat: 47.3769, lng: 8.5417, name: "Zurich, Switzerland"},
+                {lat: 46.6863, lng: 7.8632, name: "Interlaken, Switzerland"},
+                {lat: 48.1351, lng: 11.5820, name: "Munich, Germany"},
+                {lat: 50.1109, lng: 8.6821, name: "Frankfurt, Germany"},
+                {lat: 48.8566, lng: 2.3522, name: "Paris, France"},
+                {lat: 41.3851, lng: 2.1734, name: "Barcelona, Spain"},
+                {lat: 40.4168, lng: -3.7038, name: "Madrid, Spain"},
+                {lat: 33.5731, lng: -7.5898, name: "Casablanca, Morocco"},
+                {lat: 34.0181, lng: -5.0078, name: "Fez, Morocco"},
+                {lat: 31.6295, lng: -7.9811, name: "Marrakesh, Morocco"},
+                {lat: 33.5731, lng: -7.5898, name: "Back to Casablanca, Morocco"}
+            ];
+
+            const map = L.map('map').setView([42.6977, 23.3219], 5);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            const latlngs = locations.map(loc => [loc.lat, loc.lng]);
+
+            for (let location of locations) {
+                L.marker([location.lat, location.lng]).addTo(map).bindPopup(location.name);
+            }
+
+            // Add polyline with arrows for direction
+            const polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+            const arrowDecorator = L.polylineDecorator(polyline, {
+                patterns: [
+                    {
+                        offset: '25%',
+                        repeat: 100,
+                        symbol: L.Symbol.arrowHead({ 
+                            pixelSize: 10, // adjust as needed
+                            pathOptions: {color: 'blue', weight: 2}
+                        })
+                    }
+                ]
+            });
+            arrowDecorator.addTo(map);
+
+            map.fitBounds(polyline.getBounds());
+        }
+
+
+
+    </script>
+</head>
+<body onload="initMap()">
+    <header>
+        <h1>Connor's Europe Backpacking Trip</h1>
+    </header>
+    <main>
+        <h2>Trip Itinerary</h2>
+        <p>This summer, I embarked on an incredible backpacking adventure across Europe and parts of North Africa. Here's the map showing the cities I visited in the order I traveled:</p>
+        <div id="map"></div>
+    </main>
+</body>
+</html>
