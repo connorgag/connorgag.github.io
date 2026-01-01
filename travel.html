@@ -15,7 +15,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
-        /* Updated base background color to a slightly brighter deep navy */
         body { 
             margin: 0; 
             background-color: #050a1f; 
@@ -55,7 +54,7 @@
             left: 55%; 
             transform: translate(-50%, -50%);
             z-index: 1000;
-            width: 440px;
+            width: 500px;
             max-width: 90vw;
         }
 
@@ -74,6 +73,65 @@
         .glow-text {
             text-shadow: 0 0 15px rgba(96, 165, 250, 0.8);
         }
+
+        /* Gallery Styles */
+        .gallery-container {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+        .gallery-track {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease-in-out;
+        }
+        .gallery-slide {
+            min-width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+        .gallery-nav {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 20;
+        }
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .nav-dot.active {
+            background: white;
+            width: 20px;
+            border-radius: 10px;
+        }
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+            z-index: 20;
+        }
+        .gallery-arrow:hover { background: rgba(0,0,0,0.6); }
+        .arrow-left { left: 10px; }
+        .arrow-right { right: 10px; }
     </style>
 </head>
 <body>
@@ -83,25 +141,32 @@
     <!-- UI: Sidebar -->
     <div class="sidebar fixed top-0 left-0 h-full w-80 p-8 z-10 flex flex-col pointer-events-auto">
         <div class="mb-10">
-            <h1 class="text-3xl font-extrabold tracking-tight glow-text text-white">Places I've Been</h1>
+            <h1 class="text-3xl font-extrabold tracking-tight glow-text text-white">My Journey</h1>
         </div>
         
         <div id="eventList" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
             <!-- Events injected here -->
-        </div>
-
-        <div class="mt-6 pt-6 border-t border-white/10">
-            <div class="flex items-center gap-3 text-gray-300 text-[10px] uppercase tracking-widest font-bold">
-            </div>
         </div>
     </div>
 
     <!-- UI: Detail Modal -->
     <div id="overlay"></div>
     <div id="modal" class="bg-zinc-950 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
-        <div id="modalImg" class="w-full h-64 bg-cover bg-center bg-zinc-900 relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent"></div>
+        <!-- Gallery Header -->
+        <div class="gallery-container">
+            <div id="galleryTrack" class="gallery-track">
+                <!-- Slides injected here -->
+            </div>
+            <div id="galleryDots" class="gallery-nav"></div>
+            <div class="gallery-arrow arrow-left" onclick="moveGallery(-1)">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            </div>
+            <div class="gallery-arrow arrow-right" onclick="moveGallery(1)">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+            </div>
+            <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/10 to-transparent pointer-events-none"></div>
         </div>
+
         <div class="p-10 -mt-16 relative z-10">
             <div id="modalTag" class="inline-block px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-blue-500 text-white mb-6"></div>
             <h2 id="modalTitle" class="text-3xl font-bold mb-3 text-white leading-tight"></h2>
@@ -120,7 +185,7 @@
                 desc: "Winter exploration of the red rocks. Hiked Angels Landing and the icy Narrows.",
                 lat: 37.2982,
                 lng: -113.0263,
-                img: "https://picsum.photos/id/1016/800/600",
+                images: ["https://picsum.photos/id/1016/800/600", "https://picsum.photos/id/1015/800/600"],
                 color: "#fb923c",
                 tag: "Travel"
             },
@@ -131,7 +196,7 @@
                 desc: "AI research at NASA Ames Research Center, working with advanced airspace data.",
                 lat: 37.3900,
                 lng: -122.0812,
-                img: "https://picsum.photos/id/1015/600/400",
+                images: ["https://picsum.photos/id/1015/600/400"],
                 color: "#60a5fa",
                 tag: "Career"
             },
@@ -142,7 +207,7 @@
                 desc: "Donated blood stem cells at the New York Blood Center - Rye Donor Center. A life-changing contribution helping someone in need of a transplant.",
                 lat: 40.9806,
                 lng: -73.6919,
-                img: "https://picsum.photos/id/1010/800/600",
+                images: ["https://picsum.photos/id/1010/800/600"],
                 color: "#ef4444",
                 tag: "Impact"
             },
@@ -153,7 +218,7 @@
                 desc: "Relaxing at Marriott's Ko Olina Beach Club. Crystal clear lagoons and stunning Hawaiian sunsets.",
                 lat: 21.3316,
                 lng: -158.1212,
-                img: "https://picsum.photos/id/1011/800/600",
+                images: ["https://picsum.photos/id/1011/800/600"],
                 color: "#f472b6",
                 tag: "Travel"
             },
@@ -164,7 +229,7 @@
                 desc: "Focusing on AI and Robotics at UC San Diego.",
                 lat: 32.8801,
                 lng: -117.2340,
-                img: "https://picsum.photos/id/1015/600/400",
+                images: ["https://picsum.photos/id/1015/600/400"],
                 color: "#60a5fa",
                 tag: "Education"
             },
@@ -175,7 +240,7 @@
                 desc: "Navigating the labyrinthine alleys of the world's largest urban pedestrian zone.",
                 lat: 34.0331,
                 lng: -5.0003,
-                img: "https://picsum.photos/id/101/800/600",
+                images: ["https://picsum.photos/id/101/800/600"],
                 color: "#f59e0b",
                 tag: "Travel"
             },
@@ -186,7 +251,7 @@
                 desc: "Watching the stars over the Erg Chebbi dunes in the heart of the Sahara Desert.",
                 lat: 31.0802,
                 lng: -4.0120,
-                img: "https://picsum.photos/id/102/800/600",
+                images: ["https://picsum.photos/id/102/800/600"],
                 color: "#fbbf24",
                 tag: "Travel"
             },
@@ -197,7 +262,7 @@
                 desc: "Exploring the vibrant markets and the historic Jemaa el-Fnaa square.",
                 lat: 31.6295,
                 lng: -7.9811,
-                img: "https://picsum.photos/id/103/800/600",
+                images: ["https://picsum.photos/id/103/800/600"],
                 color: "#f97316",
                 tag: "Travel"
             },
@@ -208,7 +273,7 @@
                 desc: "Visiting the magnificent Hassan II Mosque on the edge of the Atlantic.",
                 lat: 33.5731,
                 lng: -7.5898,
-                img: "https://picsum.photos/id/104/800/600",
+                images: ["https://picsum.photos/id/104/800/600"],
                 color: "#ea580c",
                 tag: "Travel"
             },
@@ -219,7 +284,7 @@
                 desc: "Soaking in the art at the Prado and the energy of the Puerta del Sol.",
                 lat: 40.4168,
                 lng: -3.7038,
-                img: "https://picsum.photos/id/106/800/600",
+                images: ["https://picsum.photos/id/106/800/600"],
                 color: "#dc2626",
                 tag: "Travel"
             },
@@ -230,7 +295,7 @@
                 desc: "Architecture tours of Gaudí’s masterpieces and walks along the Barceloneta.",
                 lat: 41.3851,
                 lng: 2.1734,
-                img: "https://picsum.photos/id/107/800/600",
+                images: ["https://picsum.photos/id/107/800/600"],
                 color: "#e11d48",
                 tag: "Travel"
             },
@@ -241,7 +306,7 @@
                 desc: "Evening strolls along the Seine and exploring the hidden gems of Montmartre.",
                 lat: 48.8566,
                 lng: 2.3522,
-                img: "https://picsum.photos/id/108/800/600",
+                images: ["https://picsum.photos/id/108/800/600"],
                 color: "#ec4899",
                 tag: "Travel"
             },
@@ -252,7 +317,7 @@
                 desc: "Explored Marienplatz and the English Garden in the heart of Bavaria.",
                 lat: 48.1351,
                 lng: 11.5820,
-                img: "https://picsum.photos/id/1018/600/400",
+                images: ["https://picsum.photos/id/1018/600/400"],
                 color: "#fbbf24",
                 tag: "Travel"
             },
@@ -263,7 +328,7 @@
                 desc: "The valley of 72 waterfalls. Hiked through Interlaken and Mürren.",
                 lat: 46.5935,
                 lng: 7.9090,
-                img: "https://picsum.photos/id/1016/600/400",
+                images: ["https://picsum.photos/id/1016/600/400"],
                 color: "#22c55e",
                 tag: "Travel"
             },
@@ -274,7 +339,7 @@
                 desc: "A picturesque stop in Switzerland's largest city, surrounded by the Alps.",
                 lat: 47.3769,
                 lng: 8.5417,
-                img: "https://picsum.photos/id/109/800/600",
+                images: ["https://picsum.photos/id/109/800/600"],
                 color: "#16a34a",
                 tag: "Travel"
             },
@@ -285,7 +350,7 @@
                 desc: "Step back in time at the Colosseum and the Roman Forum.",
                 lat: 41.9028,
                 lng: 12.4964,
-                img: "https://picsum.photos/id/110/800/600",
+                images: ["https://picsum.photos/id/110/800/600"],
                 color: "#8b5cf6",
                 tag: "Travel"
             },
@@ -296,7 +361,7 @@
                 desc: "Where East meets West. Exploring the Hagia Sophia and the Bosphorus.",
                 lat: 41.0082,
                 lng: 28.9784,
-                img: "https://picsum.photos/id/111/800/600",
+                images: ["https://picsum.photos/id/111/800/600"],
                 color: "#6366f1",
                 tag: "Travel"
             },
@@ -307,7 +372,7 @@
                 desc: "Visiting the birthplace of democracy and the stunning Parthenon.",
                 lat: 37.9838,
                 lng: 23.7275,
-                img: "https://picsum.photos/id/112/800/600",
+                images: ["https://picsum.photos/id/112/800/600"],
                 color: "#0ea5e9",
                 tag: "Travel"
             },
@@ -318,7 +383,7 @@
                 desc: "Exploring one of Europe's oldest cities and its beautiful Alexander Nevsky Cathedral.",
                 lat: 42.6977,
                 lng: 23.3219,
-                img: "https://picsum.photos/id/113/800/600",
+                images: ["https://picsum.photos/id/113/800/600"],
                 color: "#06b6d4",
                 tag: "Travel"
             },
@@ -329,7 +394,7 @@
                 desc: "Jungle adventures and volcanic views at the base of Arenal Volcano.",
                 lat: 10.4709,
                 lng: -84.6433,
-                img: "https://picsum.photos/id/1019/800/600",
+                images: ["https://picsum.photos/id/1019/800/600"],
                 color: "#4ade80",
                 tag: "Travel"
             },
@@ -340,7 +405,7 @@
                 desc: "Cruising through the stunning northern mountains and deep blue waters.",
                 lat: 60.4720,
                 lng: 8.4689,
-                img: "https://picsum.photos/id/1019/600/400",
+                images: ["https://picsum.photos/id/1019/600/400"],
                 color: "#34d399",
                 tag: "Travel"
             },
@@ -351,7 +416,7 @@
                 desc: "A quick stop to see Big Ben and the British Museum.",
                 lat: 51.5074,
                 lng: -0.1278,
-                img: "https://picsum.photos/id/1020/600/400",
+                images: ["images/travel_pics/london_3.jpg", "images/travel_pics/london_0.jpg", "images/travel_pics/london_1.jpg", "images/travel_pics/london_2.jpg"],
                 color: "#a78bfa",
                 tag: "Travel"
             },
@@ -362,7 +427,7 @@
                 desc: "Exploring Old San Juan's history and beautiful Caribbean beaches.",
                 lat: 18.4655,
                 lng: -66.1057,
-                img: "https://picsum.photos/id/1021/800/600",
+                images: ["images/travel_pics/puerto_rico_0.jpg", "images/travel_pics/puerto_rico_1.jpg"],
                 color: "#fbbf24",
                 tag: "Travel"
             },
@@ -373,7 +438,7 @@
                 desc: "Pacific Northwest vibes and an unforgettable trek on Mount Rainier.",
                 lat: 46.8523,
                 lng: -121.7603,
-                img: "https://picsum.photos/id/1022/800/600",
+                images: ["images/travel_pics/seattle_0.jpg", "images/travel_pics/seattle_1.jpg", "images/travel_pics/seattle_2.jpg"],
                 color: "#38bdf8",
                 tag: "Travel"
             },
@@ -384,29 +449,29 @@
                 desc: "Classic Southern charm, historical streets, and coastal views.",
                 lat: 32.7765,
                 lng: -79.9311,
-                img: "https://picsum.photos/id/1023/800/600",
+                images: ["images/travel_pics/charleston_0.jpg", "images/travel_pics/charleston_1.jpg"],
                 color: "#c084fc",
                 tag: "Travel"
             },
             {
-                title: "Cancun Escape",
+                title: "Cancun",
                 location: "Cancun, Mexico",
                 date: "Jan 8 - 15, 2022",
                 desc: "A tropical week of sun, sand, and exploring the wonders of the Yucatan.",
                 lat: 21.1619,
                 lng: -86.8515,
-                img: "https://picsum.photos/id/1012/800/600",
+                images: ["images/travel_pics/cancun_0.jpg"],
                 color: "#2dd4bf",
                 tag: "Travel"
             },
             {
-                title: "Edinburgh Winter",
+                title: "Edinburgh",
                 location: "Edinburgh, UK",
                 date: "December 2021",
                 desc: "Magical winter nights exploring Edinburgh Castle and the historic Royal Mile.",
                 lat: 55.9533,
                 lng: -3.1883,
-                img: "https://picsum.photos/id/1013/800/600",
+                images: ["images/travel_pics/edinburgh_0.jpg"],
                 color: "#818cf8",
                 tag: "Travel"
             },
@@ -417,18 +482,18 @@
                 desc: "Immersive CS studies and highland adventures in the Granite City.",
                 lat: 57.1499,
                 lng: -2.0938,
-                img: "https://picsum.photos/id/1020/600/400",
+                images: ["images/travel_pics/aberdeen_0.jpg", "images/travel_pics/aberdeen_1.jpg", "images/travel_pics/aberdeen_2.jpg"],
                 color: "#a78bfa",
                 tag: "Education"
             },
             {
-                title: "College Years",
+                title: "College",
                 location: "St. Peter, MN",
                 date: "2018 - 2022",
                 desc: "Graduated from Gustavus Adolphus College with a major in Computer Science.",
                 lat: 44.3259,
                 lng: -93.9557,
-                img: "https://picsum.photos/id/1020/600/400",
+                images: ["images/travel_pics/gustavus_0.jpg", "images/travel_pics/gustavus_2.jpg", "images/travel_pics/gustavus_1.jpg"],
                 color: "#a78bfa",
                 tag: "Education"
             },
@@ -439,7 +504,7 @@
                 desc: "Breathtaking Pacific coastline and the vibrant culture of Jalisco.",
                 lat: 20.6565,
                 lng: -105.2114,
-                img: "https://picsum.photos/id/1024/800/600",
+                images: ["https://picsum.photos/id/1024/800/600"],
                 color: "#f87171",
                 tag: "Travel"
             },
@@ -450,7 +515,7 @@
                 desc: "Exploring the Big Apple—from the lights of Times Square to the greenery of Central Park.",
                 lat: 40.7128,
                 lng: -74.0060,
-                img: "https://picsum.photos/id/1014/800/600",
+                images: ["https://picsum.photos/id/1014/800/600"],
                 color: "#94a3b8",
                 tag: "Travel"
             },
@@ -461,19 +526,20 @@
                 desc: "Where the journey first began.",
                 lat: 44.3144,
                 lng: -94.4593,
-                img: "https://picsum.photos/id/1020/600/400",
+                images: ["images/travel_pics/new_ulm_0.jpg", "images/travel_pics/new_ulm_1.jpg"],
                 color: "#FFFF00",
                 tag: "Life"
             }
         ];
 
         let scene, camera, renderer, controls, globe, raycaster, mouse;
+        let currentEvent = null;
+        let galleryIndex = 0;
         const beams = [];
         const ripples = [];
 
         function init() {
             scene = new THREE.Scene();
-            // Lighter Midnight Blue Background
             scene.background = new THREE.Color(0x0a1128); 
             
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 2000);
@@ -496,7 +562,6 @@
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
 
-            // Brightened Lighting for more pop
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
             
@@ -519,21 +584,14 @@
             globe = new THREE.Mesh(globeGeo, globeMat);
             scene.add(globe);
 
-            // Brighter and denser Starfield
             const starsGeo = new THREE.BufferGeometry();
             const starsPos = [];
             for(let i=0; i<6000; i++) { 
                 starsPos.push((Math.random()-0.5)*2000, (Math.random()-0.5)*2000, (Math.random()-0.5)*2000);
             }
             starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPos, 3));
-            const starsMat = new THREE.PointsMaterial({ 
-                color: 0xffffff, 
-                size: 1.1, 
-                transparent: true, 
-                opacity: 0.9 
-            });
-            const stars = new THREE.Points(starsGeo, starsMat);
-            scene.add(stars);
+            const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.9 });
+            scene.add(new THREE.Points(starsGeo, starsMat));
 
             createBeams();
             createSidebar();
@@ -556,7 +614,6 @@
         function createBeams() {
             travelData.forEach(data => {
                 const pos = latLngToVector3(data.lat, data.lng, 100);
-                
                 const beamHeight = 45;
                 const beamGeo = new THREE.CylinderGeometry(1.0, 0.1, beamHeight, 12, 1, true);
                 const beamMat = new THREE.MeshBasicMaterial({
@@ -567,12 +624,10 @@
                     blending: THREE.AdditiveBlending
                 });
                 const beam = new THREE.Mesh(beamGeo, beamMat);
-                
                 const beamPos = latLngToVector3(data.lat, data.lng, 100 + beamHeight/2);
                 beam.position.copy(beamPos);
                 beam.lookAt(new THREE.Vector3(0,0,0));
                 beam.rotateX(Math.PI / 2);
-                
                 beam.userData = { eventData: data };
                 scene.add(beam);
                 beams.push(beam);
@@ -608,27 +663,71 @@
         function focusOn(event) {
             controls.autoRotate = false;
             const targetPos = latLngToVector3(event.lat, event.lng, 280);
-            
             gsap.to(camera.position, {
-                x: targetPos.x,
-                y: targetPos.y,
-                z: targetPos.z,
-                duration: 2,
-                ease: "power3.inOut",
+                x: targetPos.x, y: targetPos.y, z: targetPos.z,
+                duration: 2, ease: "power3.inOut",
                 onUpdate: () => controls.update(),
                 onComplete: () => showModal(event)
             });
         }
 
         function showModal(event) {
+            currentEvent = event;
+            galleryIndex = 0;
+            
             document.getElementById('modalTitle').innerText = event.title;
             document.getElementById('modalLoc').innerText = event.location;
-            document.getElementById('modalDesc').innerText = event.desc || "Exploring the journey...";
+            document.getElementById('modalDesc').innerText = event.desc || "";
             document.getElementById('modalTag').innerText = event.tag || 'ENTRY';
-            document.getElementById('modalImg').style.backgroundImage = `url('${event.img}')`;
             
+            const track = document.getElementById('galleryTrack');
+            const dots = document.getElementById('galleryDots');
+            track.innerHTML = '';
+            dots.innerHTML = '';
+            
+            if (event.images && event.images.length > 0) {
+                event.images.forEach((img, idx) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'gallery-slide';
+                    slide.style.backgroundImage = `url('${img}')`;
+                    track.appendChild(slide);
+                    
+                    const dot = document.createElement('div');
+                    dot.className = `nav-dot ${idx === 0 ? 'active' : ''}`;
+                    dot.onclick = () => setGalleryIndex(idx);
+                    dots.appendChild(dot);
+                });
+            }
+            
+            updateGalleryUI();
             document.getElementById('overlay').style.display = 'block';
             document.getElementById('modal').style.display = 'block';
+        }
+
+        window.moveGallery = function(dir) {
+            if (!currentEvent || !currentEvent.images) return;
+            galleryIndex += dir;
+            if (galleryIndex < 0) galleryIndex = currentEvent.images.length - 1;
+            if (galleryIndex >= currentEvent.images.length) galleryIndex = 0;
+            updateGalleryUI();
+        }
+
+        function setGalleryIndex(idx) {
+            galleryIndex = idx;
+            updateGalleryUI();
+        }
+
+        function updateGalleryUI() {
+            const track = document.getElementById('galleryTrack');
+            const dots = document.querySelectorAll('.nav-dot');
+            track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+            dots.forEach((dot, idx) => {
+                if (idx === galleryIndex) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+            const arrows = document.querySelectorAll('.gallery-arrow');
+            const display = (currentEvent?.images?.length > 1) ? 'flex' : 'none';
+            arrows.forEach(a => a.style.display = display);
         }
 
         window.closeModal = function() {
@@ -645,36 +744,26 @@
 
         function onDocumentMouseDown(event) {
             if (event.target.closest('.sidebar') || event.target.closest('#modal')) return;
-
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
             raycaster.setFromCamera(mouse, camera);
             const intersects = raycaster.intersectObjects(beams);
-            if (intersects.length > 0) {
-                focusOn(intersects[0].object.userData.eventData);
-            }
+            if (intersects.length > 0) focusOn(intersects[0].object.userData.eventData);
         }
 
         function animate() {
             requestAnimationFrame(animate);
             controls.update();
-
             ripples.forEach(r => {
-                r.scale += 0.02;
-                r.opacity -= 0.012; 
-                if (r.opacity <= 0) {
-                    r.scale = 1;
-                    r.opacity = 0.9;
-                }
+                r.scale += 0.02; r.opacity -= 0.012; 
+                if (r.opacity <= 0) { r.scale = 1; r.opacity = 0.9; }
                 r.mesh.scale.set(r.scale, r.scale, 1);
                 r.mesh.material.opacity = r.opacity;
             });
-
             beams.forEach((b, i) => {
                 const s = 1 + Math.sin(Date.now() * 0.002 + i) * 0.15;
                 b.scale.set(s, 1, s);
             });
-
             renderer.render(scene, camera);
         }
 
