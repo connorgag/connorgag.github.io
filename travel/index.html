@@ -44,8 +44,30 @@
         .event-card:hover {
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.25);
-            transform: translateY(-2px);
         }
+
+        /* Grouping Styles */
+        .group-container {
+            border-left: 2px solid rgba(96, 165, 250, 0.3);
+            margin-left: 0.5rem;
+            padding-left: 1rem;
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .group-container.expanded {
+            display: flex;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chevron { transition: transform 0.3s ease; }
+        .expanded-header .chevron { transform: rotate(180deg); }
 
         #modal {
             display: none;
@@ -152,11 +174,8 @@
     <!-- UI: Detail Modal -->
     <div id="overlay"></div>
     <div id="modal" class="bg-zinc-950 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
-        <!-- Gallery Header -->
         <div class="gallery-container">
-            <div id="galleryTrack" class="gallery-track">
-                <!-- Slides injected here -->
-            </div>
+            <div id="galleryTrack" class="gallery-track"></div>
             <div id="galleryDots" class="gallery-nav"></div>
             <div class="gallery-arrow arrow-left" onclick="moveGallery(-1)">
                 <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
@@ -171,7 +190,6 @@
             <div id="modalTag" class="inline-block px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-blue-500 text-white mb-6"></div>
             <h2 id="modalTitle" class="text-3xl font-bold mb-3 text-white leading-tight"></h2>
             <p id="modalLoc" class="text-sm text-gray-300 mb-6 flex items-center gap-2 font-semibold"></p>
-            <p id="modalDesc" class="text-gray-400 text-base leading-relaxed mb-8"></p>
             <button onclick="closeModal()" class="w-full bg-white text-black py-4 rounded-2xl font-bold hover:bg-gray-100 transition-all">Close Entry</button>
         </div>
     </div>
@@ -182,7 +200,6 @@
                 title: "Zion National Park",
                 location: "Springdale, UT",
                 date: "Dec 2025",
-                desc: "Winter exploration of the red rocks. Hiked Angels Landing and the icy Narrows.",
                 lat: 37.2982,
                 lng: -113.0263,
                 images: ["https://picsum.photos/id/1016/800/600", "https://picsum.photos/id/1015/800/600"],
@@ -193,7 +210,6 @@
                 title: "NASA Internship",
                 location: "Mountain View, CA",
                 date: "July - Sep 2025",
-                desc: "AI research at NASA Ames Research Center, working with advanced airspace data.",
                 lat: 37.3900,
                 lng: -122.0812,
                 images: ["https://picsum.photos/id/1015/600/400"],
@@ -204,7 +220,6 @@
                 title: "Stem Cell Donation",
                 location: "Rye, NY",
                 date: "August 2025",
-                desc: "Donated blood stem cells at the New York Blood Center - Rye Donor Center. A life-changing contribution helping someone in need of a transplant.",
                 lat: 40.9806,
                 lng: -73.6919,
                 images: ["https://picsum.photos/id/1010/800/600"],
@@ -212,10 +227,8 @@
                 tag: "Impact"
             },
             {
-                title: "Hawaii Getaway",
-                location: "Ko Olina, HI",
+                location: "Ko Olina, Hawaii",
                 date: "Dec 2024",
-                desc: "Relaxing at Marriott's Ko Olina Beach Club. Crystal clear lagoons and stunning Hawaiian sunsets.",
                 lat: 21.3316,
                 lng: -158.1212,
                 images: ["https://picsum.photos/id/1011/800/600"],
@@ -226,7 +239,6 @@
                 title: "Master's Program",
                 location: "San Diego, CA",
                 date: "2024 - 2025",
-                desc: "Focusing on AI and Robotics at UC San Diego.",
                 lat: 32.8801,
                 lng: -117.2340,
                 images: ["https://picsum.photos/id/1015/600/400"],
@@ -234,200 +246,173 @@
                 tag: "Education"
             },
             {
-                title: "Fez Expedition",
-                location: "Fez, Morocco",
-                date: "August 2024",
-                desc: "Navigating the labyrinthine alleys of the world's largest urban pedestrian zone.",
-                lat: 34.0331,
-                lng: -5.0003,
-                images: ["https://picsum.photos/id/101/800/600"],
-                color: "#f59e0b",
-                tag: "Travel"
+                isGroup: true,
+                title: "2024 Backpacking Trip",
+                date: "Summer 2024",
+                color: "#60a5fa",
+                tag: "Adventure",
+                subEvents: [
+                    {
+                        location: "Casablanca, Morocco",
+                        date: "August 2024",
+                        lat: 33.5731,
+                        lng: -7.5898,
+                        images: ["https://picsum.photos/id/104/800/600"],
+                        color: "#ea580c",
+                        tag: "Travel"
+                    },
+                   {
+                        location: "Merzouga, Morocco",
+                        date: "August 2024",
+                        lat: 31.0802,
+                        lng: -4.0120,
+                        images: ["https://picsum.photos/id/102/800/600"],
+                        color: "#fbbf24",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Fez, Morocco",
+                        date: "August 2024",
+                        lat: 34.0331,
+                        lng: -5.0003,
+                        images: ["https://picsum.photos/id/101/800/600"],
+                        color: "#f59e0b",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Marrakesh, Morocco",
+                        date: "August 2024",
+                        lat: 31.6295,
+                        lng: -7.9811,
+                        images: ["https://picsum.photos/id/103/800/600"],
+                        color: "#f97316",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Madrid, Spain",
+                        date: "August 2024",
+                        lat: 40.4168,
+                        lng: -3.7038,
+                        images: ["https://picsum.photos/id/106/800/600"],
+                        color: "#dc2626",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Barcelona, Spain",
+                        date: "August 2024",
+                        lat: 41.3851,
+                        lng: 2.1734,
+                        images: ["https://picsum.photos/id/107/800/600"],
+                        color: "#e11d48",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Paris, France",
+                        date: "August 2024",
+                        lat: 48.8566,
+                        lng: 2.3522,
+                        images: ["https://picsum.photos/id/108/800/600"],
+                        color: "#ec4899",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Munich, Germany",
+                        date: "August 2024",
+                        lat: 48.1351,
+                        lng: 11.5820,
+                        images: ["travel_pics/munich_0.jpg", "travel_pics/munich_1.jpg", "travel_pics/munich_2.jpg"],
+                        color: "#fbbf24",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Interlaken, Switzerland",
+                        date: "August 2024",
+                        lat: 46.5935,
+                        lng: 7.9090,
+                        images: ["travel_pics/interlaken_0.jpg", "travel_pics/interlaken_1.jpg", "travel_pics/interlaken_2.jpg", "travel_pics/interlaken_3.jpg", "travel_pics/interlaken_4.jpg"],
+                        color: "#22c55e",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Zurich, Switzerland",
+                        date: "August 2024",
+                        lat: 47.3769,
+                        lng: 8.5417,
+                        images: ["travel_pics/zurich_0.jpg", "travel_pics/zurich_1.jpg"],
+                        color: "#16a34a",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Rome, Italy",
+                        date: "July 2024",
+                        lat: 41.9028,
+                        lng: 12.4964,
+                        images: ["travel_pics/rome_0.jpg", "travel_pics/rome_1.jpg", "travel_pics/rome_2.jpg", "travel_pics/rome_3.jpg", "travel_pics/rome_4.jpg"],
+                        color: "#8b5cf6",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Istanbul, Turkey",
+                        date: "July 2024",
+                        lat: 41.0082,
+                        lng: 28.9784,
+                        images: ["travel_pics/turkey_0.jpg", "travel_pics/turkey_1.jpg", "travel_pics/turkey_2.jpg", "travel_pics/turkey_3.jpg", "travel_pics/turkey_4.jpg"],
+                        color: "#6366f1",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Athens, Greece",
+                        date: "July 2024",
+                        lat: 37.9838,
+                        lng: 23.7275,
+                        images: ["travel_pics/greece_0.jpg", "travel_pics/greece_1.jpg", "travel_pics/greece_2.jpg", "travel_pics/greece_3.jpg", "travel_pics/greece_4.jpg", "travel_pics/greece_5.jpg", "travel_pics/greece_6.jpg"],
+                        color: "#0ea5e9",
+                        tag: "Travel"
+                    },
+                    {
+                        location: "Sofia, Bulgaria",
+                        date: "July 2024",
+                        lat: 42.6977,
+                        lng: 23.3219,
+                        images: ["travel_pics/bulgaria_0.jpg", "travel_pics/bulgaria_1.jpg"],
+                        color: "#06b6d4",
+                        tag: "Travel"
+                    }
+                ]
             },
             {
-                title: "Sahara Night",
-                location: "Merzouga, Morocco",
-                date: "August 2024",
-                desc: "Watching the stars over the Erg Chebbi dunes in the heart of the Sahara Desert.",
-                lat: 31.0802,
-                lng: -4.0120,
-                images: ["https://picsum.photos/id/102/800/600"],
-                color: "#fbbf24",
-                tag: "Travel"
-            },
-            {
-                title: "Marrakesh Souks",
-                location: "Marrakesh, Morocco",
-                date: "August 2024",
-                desc: "Exploring the vibrant markets and the historic Jemaa el-Fnaa square.",
-                lat: 31.6295,
-                lng: -7.9811,
-                images: ["https://picsum.photos/id/103/800/600"],
-                color: "#f97316",
-                tag: "Travel"
-            },
-            {
-                title: "Casablanca Coast",
-                location: "Casablanca, Morocco",
-                date: "August 2024",
-                desc: "Visiting the magnificent Hassan II Mosque on the edge of the Atlantic.",
-                lat: 33.5731,
-                lng: -7.5898,
-                images: ["https://picsum.photos/id/104/800/600"],
-                color: "#ea580c",
-                tag: "Travel"
-            },
-            {
-                title: "Madrid Life",
-                location: "Madrid, Spain",
-                date: "August 2024",
-                desc: "Soaking in the art at the Prado and the energy of the Puerta del Sol.",
-                lat: 40.4168,
-                lng: -3.7038,
-                images: ["https://picsum.photos/id/106/800/600"],
-                color: "#dc2626",
-                tag: "Travel"
-            },
-            {
-                title: "Barcelona Vibes",
-                location: "Barcelona, Spain",
-                date: "August 2024",
-                desc: "Architecture tours of Gaudí’s masterpieces and walks along the Barceloneta.",
-                lat: 41.3851,
-                lng: 2.1734,
-                images: ["https://picsum.photos/id/107/800/600"],
-                color: "#e11d48",
-                tag: "Travel"
-            },
-            {
-                title: "Parisian Summer",
-                location: "Paris, France",
-                date: "August 2024",
-                desc: "Evening strolls along the Seine and exploring the hidden gems of Montmartre.",
-                lat: 48.8566,
-                lng: 2.3522,
-                images: ["https://picsum.photos/id/108/800/600"],
-                color: "#ec4899",
-                tag: "Travel"
-            },
-            {
-                title: "Munich City Tour",
-                location: "Germany",
-                date: "August 2024",
-                desc: "Explored Marienplatz and the English Garden in the heart of Bavaria.",
-                lat: 48.1351,
-                lng: 11.5820,
-                images: ["https://picsum.photos/id/1018/600/400"],
-                color: "#fbbf24",
-                tag: "Travel"
-            },
-            {
-                title: "Lauterbrunnen Valley",
-                location: "Switzerland",
-                date: "August 2024",
-                desc: "The valley of 72 waterfalls. Hiked through Interlaken and Mürren.",
-                lat: 46.5935,
-                lng: 7.9090,
-                images: ["https://picsum.photos/id/1016/600/400"],
-                color: "#22c55e",
-                tag: "Travel"
-            },
-            {
-                title: "Zurich Lake",
-                location: "Zurich, Switzerland",
-                date: "August 2024",
-                desc: "A picturesque stop in Switzerland's largest city, surrounded by the Alps.",
-                lat: 47.3769,
-                lng: 8.5417,
-                images: ["https://picsum.photos/id/109/800/600"],
-                color: "#16a34a",
-                tag: "Travel"
-            },
-            {
-                title: "Ancient Rome",
-                location: "Rome, Italy",
-                date: "July 2024",
-                desc: "Step back in time at the Colosseum and the Roman Forum.",
-                lat: 41.9028,
-                lng: 12.4964,
-                images: ["https://picsum.photos/id/110/800/600"],
-                color: "#8b5cf6",
-                tag: "Travel"
-            },
-            {
-                title: "Istanbul Crossing",
-                location: "Istanbul, Turkey",
-                date: "July 2024",
-                desc: "Where East meets West. Exploring the Hagia Sophia and the Bosphorus.",
-                lat: 41.0082,
-                lng: 28.9784,
-                images: ["https://picsum.photos/id/111/800/600"],
-                color: "#6366f1",
-                tag: "Travel"
-            },
-            {
-                title: "Athens Acropolis",
-                location: "Athens, Greece",
-                date: "July 2024",
-                desc: "Visiting the birthplace of democracy and the stunning Parthenon.",
-                lat: 37.9838,
-                lng: 23.7275,
-                images: ["https://picsum.photos/id/112/800/600"],
-                color: "#0ea5e9",
-                tag: "Travel"
-            },
-            {
-                title: "Sofia Heritage",
-                location: "Sofia, Bulgaria",
-                date: "July 2024",
-                desc: "Exploring one of Europe's oldest cities and its beautiful Alexander Nevsky Cathedral.",
-                lat: 42.6977,
-                lng: 23.3219,
-                images: ["https://picsum.photos/id/113/800/600"],
-                color: "#06b6d4",
-                tag: "Travel"
-            },
-            {
-                title: "La Fortuna",
-                location: "Costa Rica",
-                date: "Feb 4 – 11, 2024",
-                desc: "Jungle adventures and volcanic views at the base of Arenal Volcano.",
+                location: "La Fortuna, Costa Rica",
+                date: "February 2024",
                 lat: 10.4709,
                 lng: -84.6433,
-                images: ["https://picsum.photos/id/1019/800/600"],
+                images: ["travel_pics/costa_rica_0.jpg", "travel_pics/costa_rica_1.jpg", "travel_pics/costa_rica_2.jpg"],
                 color: "#4ade80",
                 tag: "Travel"
             },
             {
-                title: "Norwegian Fjords",
                 location: "Norway",
                 date: "June 2023",
-                desc: "Cruising through the stunning northern mountains and deep blue waters.",
                 lat: 60.4720,
                 lng: 8.4689,
-                images: ["https://picsum.photos/id/1019/600/400"],
+                images: ["travel_pics/norway_0.jpg", "travel_pics/norway_1.jpg", "travel_pics/norway_2.jpg", "travel_pics/norway_3.jpg", "travel_pics/norway_4.jpg"],
                 color: "#34d399",
                 tag: "Travel"
             },
             {
-                title: "London Trip",
-                location: "United Kingdom",
+                location: "London, UK",
                 date: "May 2023",
-                desc: "A quick stop to see Big Ben and the British Museum.",
                 lat: 51.5074,
                 lng: -0.1278,
-                images: ["images/travel_pics/london_3.jpg", "images/travel_pics/london_0.jpg", "images/travel_pics/london_1.jpg", "images/travel_pics/london_2.jpg"],
+                images: ["travel_pics/london_3.jpg", "travel_pics/london_0.jpg", "travel_pics/london_1.jpg", "travel_pics/london_2.jpg"],
                 color: "#a78bfa",
                 tag: "Travel"
             },
             {
-                title: "San Juan",
-                location: "Puerto Rico",
+                location: "San Juan, PR",
                 date: "Jan 28 - Feb 4, 2023",
-                desc: "Exploring Old San Juan's history and beautiful Caribbean beaches.",
                 lat: 18.4655,
                 lng: -66.1057,
-                images: ["images/travel_pics/puerto_rico_0.jpg", "images/travel_pics/puerto_rico_1.jpg"],
+                images: ["travel_pics/puerto_rico_0.jpg", "travel_pics/puerto_rico_1.jpg"],
                 color: "#fbbf24",
                 tag: "Travel"
             },
@@ -435,43 +420,36 @@
                 title: "Seattle & Mt Rainier",
                 location: "Washington, USA",
                 date: "October 2022",
-                desc: "Pacific Northwest vibes and an unforgettable trek on Mount Rainier.",
                 lat: 46.8523,
                 lng: -121.7603,
-                images: ["images/travel_pics/seattle_0.jpg", "images/travel_pics/seattle_1.jpg", "images/travel_pics/seattle_2.jpg"],
+                images: ["travel_pics/seattle_0.jpg", "travel_pics/seattle_1.jpg", "travel_pics/seattle_2.jpg"],
                 color: "#38bdf8",
                 tag: "Travel"
             },
             {
-                title: "Charleston",
-                location: "South Carolina",
+                location: "Charleston, SC",
                 date: "March 2022",
-                desc: "Classic Southern charm, historical streets, and coastal views.",
                 lat: 32.7765,
                 lng: -79.9311,
-                images: ["images/travel_pics/charleston_0.jpg", "images/travel_pics/charleston_1.jpg"],
+                images: ["travel_pics/charleston_0.jpg", "travel_pics/charleston_1.jpg"],
                 color: "#c084fc",
                 tag: "Travel"
             },
             {
-                title: "Cancun",
                 location: "Cancun, Mexico",
                 date: "Jan 8 - 15, 2022",
-                desc: "A tropical week of sun, sand, and exploring the wonders of the Yucatan.",
                 lat: 21.1619,
                 lng: -86.8515,
-                images: ["images/travel_pics/cancun_0.jpg"],
+                images: ["travel_pics/cancun_0.jpg"],
                 color: "#2dd4bf",
                 tag: "Travel"
             },
             {
-                title: "Edinburgh",
                 location: "Edinburgh, UK",
                 date: "December 2021",
-                desc: "Magical winter nights exploring Edinburgh Castle and the historic Royal Mile.",
                 lat: 55.9533,
                 lng: -3.1883,
-                images: ["images/travel_pics/edinburgh_0.jpg"],
+                images: ["travel_pics/edinburgh_0.jpg"],
                 color: "#818cf8",
                 tag: "Travel"
             },
@@ -479,10 +457,9 @@
                 title: "Study Abroad",
                 location: "Aberdeen, Scotland",
                 date: "Sep - Dec 2021",
-                desc: "Immersive CS studies and highland adventures in the Granite City.",
                 lat: 57.1499,
                 lng: -2.0938,
-                images: ["images/travel_pics/aberdeen_0.jpg", "images/travel_pics/aberdeen_1.jpg", "images/travel_pics/aberdeen_2.jpg"],
+                images: ["travel_pics/aberdeen_0.jpg", "travel_pics/aberdeen_1.jpg", "travel_pics/aberdeen_2.jpg"],
                 color: "#a78bfa",
                 tag: "Education"
             },
@@ -490,18 +467,15 @@
                 title: "College",
                 location: "St. Peter, MN",
                 date: "2018 - 2022",
-                desc: "Graduated from Gustavus Adolphus College with a major in Computer Science.",
                 lat: 44.3259,
                 lng: -93.9557,
-                images: ["images/travel_pics/gustavus_0.jpg", "images/travel_pics/gustavus_2.jpg", "images/travel_pics/gustavus_1.jpg"],
+                images: ["travel_pics/gustavus_0.jpg", "travel_pics/gustavus_2.jpg", "travel_pics/gustavus_1.jpg"],
                 color: "#a78bfa",
                 tag: "Education"
             },
             {
-                title: "Puerto Vallarta",
-                location: "Jalisco, Mexico",
+                location: "Puerto Vallarta, MX",
                 date: "January 7, 2018",
-                desc: "Breathtaking Pacific coastline and the vibrant culture of Jalisco.",
                 lat: 20.6565,
                 lng: -105.2114,
                 images: ["https://picsum.photos/id/1024/800/600"],
@@ -509,24 +483,11 @@
                 tag: "Travel"
             },
             {
-                title: "New York City",
-                location: "New York, USA",
-                date: "August 2015",
-                desc: "Exploring the Big Apple—from the lights of Times Square to the greenery of Central Park.",
-                lat: 40.7128,
-                lng: -74.0060,
-                images: ["https://picsum.photos/id/1014/800/600"],
-                color: "#94a3b8",
-                tag: "Travel"
-            },
-            {
-                title: "Hometown",
                 location: "New Ulm, MN",
                 date: "Origins",
-                desc: "Where the journey first began.",
                 lat: 44.3144,
                 lng: -94.4593,
-                images: ["images/travel_pics/new_ulm_0.jpg", "images/travel_pics/new_ulm_1.jpg"],
+                images: ["travel_pics/new_ulm_0.jpg", "travel_pics/new_ulm_1.jpg"],
                 color: "#FFFF00",
                 tag: "Life"
             }
@@ -537,6 +498,7 @@
         let galleryIndex = 0;
         const beams = [];
         const ripples = [];
+        const fallbackImage = "https://placehold.co/800x600/0a1128/ffffff?text=Image+Loading...";
 
         function init() {
             scene = new THREE.Scene();
@@ -593,8 +555,7 @@
             const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.9 });
             scene.add(new THREE.Points(starsGeo, starsMat));
 
-            createBeams();
-            createSidebar();
+            createBeamsAndSidebar();
 
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('click', onDocumentMouseDown);
@@ -611,52 +572,97 @@
             );
         }
 
-        function createBeams() {
-            travelData.forEach(data => {
-                const pos = latLngToVector3(data.lat, data.lng, 100);
-                const beamHeight = 45;
-                const beamGeo = new THREE.CylinderGeometry(1.0, 0.1, beamHeight, 12, 1, true);
-                const beamMat = new THREE.MeshBasicMaterial({
-                    color: new THREE.Color(data.color),
-                    transparent: true,
-                    opacity: 0.7,
-                    side: THREE.DoubleSide,
-                    blending: THREE.AdditiveBlending
-                });
-                const beam = new THREE.Mesh(beamGeo, beamMat);
-                const beamPos = latLngToVector3(data.lat, data.lng, 100 + beamHeight/2);
-                beam.position.copy(beamPos);
-                beam.lookAt(new THREE.Vector3(0,0,0));
-                beam.rotateX(Math.PI / 2);
-                beam.userData = { eventData: data };
-                scene.add(beam);
-                beams.push(beam);
-
-                const rippleGeo = new THREE.RingGeometry(1, 1.4, 32);
-                const rippleMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(data.color), transparent: true, opacity: 0.9, side: THREE.DoubleSide });
-                const ripple = new THREE.Mesh(rippleGeo, rippleMat);
-                ripple.position.copy(pos.clone().multiplyScalar(1.01));
-                ripple.lookAt(new THREE.Vector3(0,0,0));
-                scene.add(ripple);
-                ripples.push({ mesh: ripple, scale: 1, opacity: 0.9 });
+        function addGlobeMarker(data) {
+            const pos = latLngToVector3(data.lat, data.lng, 100);
+            const beamHeight = 45;
+            const beamGeo = new THREE.CylinderGeometry(0.8, 0.1, beamHeight, 12, 1, true);
+            const beamMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(data.color),
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending
             });
+            const beam = new THREE.Mesh(beamGeo, beamMat);
+            const beamPos = latLngToVector3(data.lat, data.lng, 100 + beamHeight/2);
+            beam.position.copy(beamPos);
+            beam.lookAt(new THREE.Vector3(0,0,0));
+            beam.rotateX(Math.PI / 2);
+            beam.userData = { eventData: data };
+            scene.add(beam);
+            beams.push(beam);
+
+            const rippleGeo = new THREE.RingGeometry(1, 1.4, 32);
+            const rippleMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(data.color), transparent: true, opacity: 0.9, side: THREE.DoubleSide });
+            const ripple = new THREE.Mesh(rippleGeo, rippleMat);
+            ripple.position.copy(pos.clone().multiplyScalar(1.01));
+            ripple.lookAt(new THREE.Vector3(0,0,0));
+            scene.add(ripple);
+            ripples.push({ mesh: ripple, scale: 1, opacity: 0.9 });
         }
 
-        function createSidebar() {
+        function createEventCard(event, isSub = false) {
+            const card = document.createElement('div');
+            card.className = `event-card p-5 rounded-2xl cursor-pointer ${isSub ? 'mb-0' : ''}`;
+            
+            // Logic to handle empty title
+            const displayTitle = event.title || event.location;
+            const displayLoc = event.title ? event.location : "";
+
+            card.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest text-blue-300">${event.tag || 'ENTRY'}</span>
+                    <span class="text-[10px] text-gray-400 font-mono">${event.date}</span>
+                </div>
+                <div class="text-sm font-bold text-white">${displayTitle}</div>
+                ${displayLoc ? `<div class="text-[11px] text-gray-400 mt-1">${displayLoc}</div>` : ''}
+            `;
+            card.onclick = (e) => {
+                e.stopPropagation();
+                focusOn(event);
+            }
+            return card;
+        }
+
+        function createBeamsAndSidebar() {
             const list = document.getElementById('eventList');
-            travelData.forEach(event => {
-                const card = document.createElement('div');
-                card.className = "event-card p-5 rounded-2xl cursor-pointer";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-[9px] font-extrabold uppercase tracking-widest text-blue-300">${event.tag || 'ENTRY'}</span>
-                        <span class="text-[10px] text-gray-400 font-mono">${event.date}</span>
-                    </div>
-                    <div class="text-sm font-bold text-white">${event.title}</div>
-                    <div class="text-[11px] text-gray-400 mt-1">${event.location}</div>
-                `;
-                card.onclick = () => focusOn(event);
-                list.appendChild(card);
+            travelData.forEach(item => {
+                if (item.isGroup) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "flex flex-col gap-2";
+
+                    const header = document.createElement('div');
+                    header.className = "event-card p-5 rounded-2xl cursor-pointer flex justify-between items-center border-l-4";
+                    header.style.borderLeftColor = item.color || '#60a5fa';
+                    header.innerHTML = `
+                        <div>
+                            <div class="text-[9px] font-extrabold uppercase tracking-widest text-blue-400 mb-1">TRIP FOLDER</div>
+                            <div class="text-sm font-bold text-white">${item.title}</div>
+                            <div class="text-[10px] text-gray-400 mt-0.5">${item.date} • ${item.subEvents.length} Stops</div>
+                        </div>
+                        <svg class="chevron w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    `;
+
+                    const subContainer = document.createElement('div');
+                    subContainer.className = "group-container";
+
+                    header.onclick = () => {
+                        subContainer.classList.toggle('expanded');
+                        header.classList.toggle('expanded-header');
+                    };
+
+                    item.subEvents.forEach(sub => {
+                        subContainer.appendChild(createEventCard(sub, true));
+                        addGlobeMarker(sub);
+                    });
+
+                    wrapper.appendChild(header);
+                    wrapper.appendChild(subContainer);
+                    list.appendChild(wrapper);
+                } else {
+                    list.appendChild(createEventCard(item));
+                    addGlobeMarker(item);
+                }
             });
         }
 
@@ -675,9 +681,9 @@
             currentEvent = event;
             galleryIndex = 0;
             
-            document.getElementById('modalTitle').innerText = event.title;
-            document.getElementById('modalLoc').innerText = event.location;
-            document.getElementById('modalDesc').innerText = event.desc || "";
+            // Logic to handle empty title in Modal
+            document.getElementById('modalTitle').innerText = event.title || event.location;
+            document.getElementById('modalLoc').innerText = event.title ? event.location : "";
             document.getElementById('modalTag').innerText = event.tag || 'ENTRY';
             
             const track = document.getElementById('galleryTrack');
@@ -689,7 +695,7 @@
                 event.images.forEach((img, idx) => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
-                    slide.style.backgroundImage = `url('${img}')`;
+                    slide.style.backgroundImage = `url('${img}'), url('${fallbackImage}')`;
                     track.appendChild(slide);
                     
                     const dot = document.createElement('div');
@@ -720,7 +726,7 @@
         function updateGalleryUI() {
             const track = document.getElementById('galleryTrack');
             const dots = document.querySelectorAll('.nav-dot');
-            track.style.transform = `translateX(-${galleryIndex * 100}%)`;
+            if (track) track.style.transform = `translateX(-${galleryIndex * 100}%)`;
             dots.forEach((dot, idx) => {
                 if (idx === galleryIndex) dot.classList.add('active');
                 else dot.classList.remove('active');
