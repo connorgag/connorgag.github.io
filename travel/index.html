@@ -102,18 +102,37 @@
             height: 500px;
             overflow: hidden;
             position: relative;
+            background: #111;
         }
+        
+        /* Shimmer Loading Effect */
+        .shimmer {
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         .gallery-track {
             display: flex;
             height: 100%;
-            transition: transform 0.5s ease-in-out;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .gallery-slide {
             min-width: 100%;
             height: 100%;
             background-size: cover;
             background-position: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
+        .gallery-slide.loaded {
+            opacity: 1;
+        }
+
         .gallery-nav {
             position: absolute;
             bottom: 15px;
@@ -129,7 +148,7 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.3);
             cursor: pointer;
-            transition: background 0.3s;
+            transition: background 0.3s, width 0.3s;
         }
         .nav-dot.active {
             background: white;
@@ -174,7 +193,7 @@
     <!-- UI: Detail Modal -->
     <div id="overlay"></div>
     <div id="modal" class="bg-zinc-950 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
-        <div class="gallery-container">
+        <div class="gallery-container shimmer" id="galleryContainer">
             <div id="galleryTrack" class="gallery-track"></div>
             <div id="galleryDots" class="gallery-nav"></div>
             <div class="gallery-arrow arrow-left" onclick="moveGallery(-1)">
@@ -575,7 +594,24 @@
         let galleryIndex = 0;
         const beams = [];
         const ripples = [];
-        const fallbackImage = "https://placehold.co/800x600/0a1128/ffffff?text=Image+Loading...";
+        
+        // Cache for preloaded images
+        const preloadedImages = new Set();
+
+        function preloadImages() {
+            // Flatten all image URLs into a single array
+            const allUrls = travelData.flatMap(item => {
+                if (item.isGroup) return item.subEvents.flatMap(sub => sub.images || []);
+                return item.images || [];
+            });
+
+            // Start preloading in the background
+            allUrls.forEach(url => {
+                const img = new Image();
+                img.src = url;
+                img.onload = () => preloadedImages.add(url);
+            });
+        }
 
         function init() {
             scene = new THREE.Scene();
@@ -636,6 +672,10 @@
 
             window.addEventListener('resize', onWindowResize);
             window.addEventListener('click', onDocumentMouseDown);
+            
+            // Start the preload process after a slight delay to prioritize globe assets
+            setTimeout(preloadImages, 1000);
+            
             animate();
         }
 
@@ -651,10 +691,6 @@
 
         function addGlobeMarker(data) {
             const pos = latLngToVector3(data.lat, data.lng, 100);
-            
-            // HEIGHT CALCULATION BASED ON TIME SPENT
-            // We use a base height plus a logarithmic/power scale of the duration in months
-            // This ensures that 228 months is much taller than 1 month, but still manageable visually.
             const duration = data.durationMonths || 1;
             const beamHeight = 15 + Math.pow(duration, 0.6) * 6; 
             
@@ -668,7 +704,6 @@
             });
             const beam = new THREE.Mesh(beamGeo, beamMat);
             
-            // Position beam so it starts at the globe surface and extends outward
             const beamPos = latLngToVector3(data.lat, data.lng, 100 + beamHeight/2);
             beam.position.copy(beamPos);
             beam.lookAt(new THREE.Vector3(0,0,0));
@@ -752,7 +787,6 @@
 
         function focusOn(event) {
             controls.autoRotate = false;
-            // Adjust camera zoom based on beam height for better framing
             const duration = event.durationMonths || 1;
             const beamHeight = 15 + Math.pow(duration, 0.6) * 6;
             const zoomDist = 200 + (beamHeight * 0.8);
@@ -776,14 +810,34 @@
             
             const track = document.getElementById('galleryTrack');
             const dots = document.getElementById('galleryDots');
+            const galleryContainer = document.getElementById('galleryContainer');
+            
             track.innerHTML = '';
             dots.innerHTML = '';
             
+            // Add Shimmer class while preparing
+            galleryContainer.classList.add('shimmer');
+
             if (event.images && event.images.length > 0) {
-                event.images.forEach((img, idx) => {
+                event.images.forEach((imgSrc, idx) => {
                     const slide = document.createElement('div');
                     slide.className = 'gallery-slide';
-                    slide.style.backgroundImage = `url('${img}'), url('${fallbackImage}')`;
+                    
+                    // Create an image object to track specific slide loading
+                    const img = new Image();
+                    img.src = imgSrc;
+                    img.onload = () => {
+                        slide.style.backgroundImage = `url('${imgSrc}')`;
+                        slide.classList.add('loaded');
+                        // Remove shimmer if this is the first slide
+                        if (idx === 0) galleryContainer.classList.remove('shimmer');
+                    };
+                    img.onerror = () => {
+                        slide.style.backgroundImage = `url('https://placehold.co/800x600/111111/white?text=Image+Not+Found')`;
+                        slide.classList.add('loaded');
+                        if (idx === 0) galleryContainer.classList.remove('shimmer');
+                    };
+                    
                     track.appendChild(slide);
                     
                     const dot = document.createElement('div');
@@ -791,6 +845,8 @@
                     dot.onclick = () => setGalleryIndex(idx);
                     dots.appendChild(dot);
                 });
+            } else {
+                galleryContainer.classList.remove('shimmer');
             }
             
             updateGalleryUI();
@@ -855,7 +911,6 @@
                 r.mesh.material.opacity = r.opacity;
             });
             beams.forEach((b, i) => {
-                // Subtle pulse on the width, not the height, to keep the duration visual accurate
                 const s = 1 + Math.sin(Date.now() * 0.002 + i) * 0.15;
                 b.scale.set(s, 1, s);
             });
